@@ -82,9 +82,15 @@ const getFunFacts = async(req, res) => {
 const addFunFacts = async (req,res) => {
     const { funfacts } = req.body;
 
+
+//Checks if fun facts are missing
+if (funfacts === undefined) {
+    return res.status(400).json({message: 'State fun facts value required'})
+}
+
 //Checks for  array of fun facts
-    if (!funfacts || !Array.isArray(funfacts)) {
-        return res.status(400).json({message: 'State fun facts value required and must be an array.' }); 
+    if (!Array.isArray(funfacts)) {
+        return res.status(400).json({message: 'State fun facts value must be an array.' }); 
     }
 
     //Add to MongoDB or create new if state unavailable

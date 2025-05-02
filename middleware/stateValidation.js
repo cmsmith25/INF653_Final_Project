@@ -19,7 +19,7 @@ const stateValidation = (req, res, next) => {
     //finds the matching state in JSON
     const sameState = statesData.find(state => state.code === stateCode);
     if(!sameState) {
-        return res.status(400).json({message: 'Invalid state code'});
+        return res.status(400).json({message: 'Invalid state abbreviation parameter'});
     }
     //attaches state and code to request
     req.state = sameState;
