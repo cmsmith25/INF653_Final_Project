@@ -125,17 +125,17 @@ const updateFunFact = async (req, res) => {
 
 
     if (!state || !state.funfacts || state.funfacts.length === 0) {
-        return res.status(404).json({ message: `No Fun Fact found for ${stateName}`});
+        return res.status(404).json({ message: `No Fun Fact found for ${req.state.state}`});
     }
 
     //Index validation
-    if(index < 0 || index >= state.funfacts.length) {
-        return res.status(404).json({message: `No Fun Fact found at that index for ${stateName}`});
+    if(index < 1 || index > state.funfacts.length) {
+        return res.status(404).json({message: `No Fun Fact found at that index for ${req.state.state}`});
     }
 
 
     //updates fact at index
-    state.funfacts[index] = funfact;
+    state.funfacts[index -1] = funfact;
     await state.save();
 
     res.json(state);
@@ -146,8 +146,7 @@ const updateFunFact = async (req, res) => {
 
 //DELETE will remove a fun fact by index
 const deleteFunFact = async (req, res) => {
-    //makes state code uppercase
-    const stateCode = req.params.state.toUpperCase();
+    
     const { index } = req.body;
 
     //checks for index
@@ -156,25 +155,27 @@ const deleteFunFact = async (req, res) => {
     }
 
     //finds the state in MongoDB
-    const state = await State.findOne({ stateCode });
+    const state = await State.findOne({ stateCode: req.stateCode });
 
     //Index validation
     if (!state || !state.funfacts || state.funfacts.length === 0) {
-        return res.status(404).json({ message: `No Fun Facts found for ${stateCode}`});
+        return res.status(404).json({ message: `No Fun Facts found for ${req.state.state}`});
     }
 
-    const arrayIndex = index - 1;//will adjust index from 1 to 0 base for test
-
     //checks if index is in the array
-    if (arrayIndex < 0 || arrayIndex >= state.funfacts.length) {
-        return res.status(404).json({message: `No Fun Fact found at that index for ${stateCode}`});
+    if (index < 1 || index >= state.funfacts.length) {
+        return res.status(404).json({message: `No Fun Fact found at that index for ${req.state.state}`});
     }
 
     //Deletes the fun fact
-    state.funfacts.splice(arrayIndex, 1);
+    state.funfacts.splice(index - 1);
     await state.save();//saves update
 
-    res.json(state);
+    res.json({
+        state: req.state.state,
+        code: req.stateCode,
+        nickname: req.state.nickname,
+        funfacts: state.funfacts });
 };
 
 const getCapital = (req,res) => {
