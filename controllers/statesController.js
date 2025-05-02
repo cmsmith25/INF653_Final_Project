@@ -90,7 +90,7 @@ if (funfacts === undefined) {
 
 //Checks for  array of fun facts
     if (!Array.isArray(funfacts)) {
-        return res.status(400).json({message: 'State fun facts value must be an array.' }); 
+        return res.status(400).json({message: 'State fun facts value must be an array' }); 
     }
 
     //Add to MongoDB or create new if state unavailable
@@ -110,20 +110,32 @@ const updateFunFact = async (req, res) => {
 
     const { index, funfact} = req.body;
 
-    //checks for index and fun fact
-    if (index === undefined || funfact === undefined) {
-        return res.status(400).json({ message: 'Both index and fun fact are required.'});
-    }
 
+    //checks for index and fun fact
+    if (index === undefined) {
+        return res.status(400).json({message: 'State fun fact index value required'});
+    }
+        
+    if(!funfact || typeof funfact !== 'string') {
+        return res.status(400).json({ message: 'State fun fact value required'});
+    }
+    
+    //Does state exist in DB?
     const state = await State.findOne({ stateCode: req.stateCode });
 
-    //Index validation
-    if (!state || !state.funfacts || index < 1 || index> state.funfacts.length) {
-        return res.status(404).json({ message: 'No Fun Fact found at that index for ' + stateCode});
+
+    if (!state || !state.funfacts || state.funfacts.length === 0) {
+        return res.status(404).json({ message: `No Fun Fact found for ${stateName}`});
     }
 
+    //Index validation
+    if(index < 0 || index >= state.funfacts.length) {
+        return res.status(404).json({message: `No Fun Fact found at that index for ${stateName}`});
+    }
+
+
     //updates fact at index
-    state.funfacts[index - 1] = funfact;
+    state.funfacts[index] = funfact;
     await state.save();
 
     res.json(state);
@@ -134,19 +146,33 @@ const updateFunFact = async (req, res) => {
 
 //DELETE will remove a fun fact by index
 const deleteFunFact = async (req, res) => {
+    //makes state code uppercase
     const stateCode = req.params.state.toUpperCase();
     const { index } = req.body;
 
-    const state = await State.findOne({ stateCode: req.stateCode });
+    //checks for index
+    if (index === undefined) {
+        return res.status(400).json({ message: 'State fun fact index value required'});
+    }
+
+    //finds the state in MongoDB
+    const state = await State.findOne({ stateCode });
 
     //Index validation
-    if (!state || !state.funfacts || index < 1 || index > state.funfacts.length) {
-        return res.status(404).json({ message: 'No Fun Fact found at that index for ' + stateCode });
+    if (!state || !state.funfacts || state.funfacts.length === 0) {
+        return res.status(404).json({ message: `No Fun Facts found for ${stateCode}`});
+    }
+
+    const arrayIndex = index - 1;//will adjust index from 1 to 0 base for test
+
+    //checks if index is in the array
+    if (arrayIndex < 0 || arrayIndex >= state.funfacts.length) {
+        return res.status(404).json({message: `No Fun Fact found at that index for ${stateCode}`});
     }
 
     //Deletes the fun fact
-    state.funfacts.splice(index - 1, 1);
-    await state.save();
+    state.funfacts.splice(arrayIndex, 1);
+    await state.save();//saves update
 
     res.json(state);
 };
