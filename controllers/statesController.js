@@ -64,7 +64,7 @@ const getFunFacts = async(req, res) => {
 
     //Returns error if no fun fact is found
     if (!mongoEntry || !mongoEntry.funfacts?.length) {
-        return res.status(404).json({ message: `No Fun Facts found for ${req.stateCode}`}); 
+        return res.status(404).json({ message: `No Fun Facts found for ${req.state.state}`}); 
     }
     //Selects random fun fact from MongoDB
     const funfact = mongoEntry.funfacts[Math.floor(Math.random() * mongoEntry.funfacts.length)];

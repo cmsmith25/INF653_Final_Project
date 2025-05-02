@@ -22,6 +22,20 @@ app.use(express.json());
 app.use('/states', require('./routes/states'));
 
 
+app.get('/', (req,res) => {
+    res.status(404).send(`
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>US States Facts</title>
+            </head>
+            <body>
+                <h1>Welcome to my US States Fact Finder</h1>
+            </body>
+        </html>
+    `);
+})
+
 //CATCH-ALL for 404 
 app.all('*', (req,res) => {
     //Will send the correct type of response to the client
