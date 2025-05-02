@@ -22,8 +22,9 @@ app.use(express.json());
 app.use('/states', require('./routes/states'));
 
 
+//Root endpoint HTML doc required by test
 app.get('/', (req,res) => {
-    res.status(404).send(`
+    res.send(`
         <!DOCTYPE html>
         <html>
             <head>
@@ -40,7 +41,19 @@ app.get('/', (req,res) => {
 app.all('*', (req,res) => {
     //Will send the correct type of response to the client
     if(req.accepts('html')) {
-        res.status(404).send('<h1>404 Not Found</h1>');
+        res.status(404).send(`
+            <!DOCTYPE html>
+        <html>
+            <head>
+                <title>404 Not Found</title>
+            </head>
+            <body>
+                <h1>404 Not Found</h1>
+                <p>This page does not exist</p>
+            </body>
+        </html> 
+        `);
+
     } else if (req.accepts('json')) {
         res.status(404).json({ error: '404 Not Found' });
     } else {
