@@ -130,7 +130,7 @@ const updateFunFact = async (req, res) => {
 
     //Index validation
     if(index < 1 || index > state.funfacts.length) {
-        return res.status(404).json({message: `No Fun Fact found at that index for ${req.state.state}`});
+        return res.status(404).json({message: `No Fun Fact found for ${req.state.state}`});
     }
 
 
@@ -168,7 +168,7 @@ const deleteFunFact = async (req, res) => {
     }
 
     //Deletes the fun fact
-    state.funfacts.splice(index - 1);
+    state.funfacts.splice(index - 1, 1);
     await state.save();//saves update
 
     res.json({
