@@ -6,6 +6,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 
 
 const app = express(); //Creates the Express application
@@ -18,24 +19,13 @@ app.use(cors());
 //Enables the server to understand JSON (parse)
 app.use(express.json());
 
+//serves files from public folder 
+app.use(express.static(path.join(__dirname, 'public')));
+
 //Uses routes defined in routes/states.js
 app.use('/states', require('./routes/states'));
 
 
-//Root endpoint HTML doc required by test
-app.get('/', (req,res) => {
-    res.send(`
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <title>US States Facts</title>
-            </head>
-            <body>
-                <h1>Welcome to my US States Fact Finder</h1>
-            </body>
-        </html>
-    `);
-})
 
 //CATCH-ALL for 404 
 app.all('*', (req,res) => {
