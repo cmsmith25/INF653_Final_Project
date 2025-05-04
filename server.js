@@ -19,11 +19,24 @@ app.use(cors());
 //Enables the server to understand JSON (parse)
 app.use(express.json());
 
-//serves files from public folder 
-app.use(express.static(path.join(__dirname, 'public')));
+
 
 //Uses routes defined in routes/states.js
 app.use('/states', require('./routes/states'));
+
+app.get('/', (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>US States Fact Finder</title>
+            </head>
+            <body>
+                <h1>Welcome to my States Fact Finder</h1>
+            </body>
+        </html>
+    `);
+})
 
 
 
